@@ -15,8 +15,9 @@ import (
 func main() {
 	// Get the session name from the CLI
 	var quiet = flag.Bool("q", false, "Quiet mode, avoid all output.")
-	flag.Usage = func(){
-		if !*quiet{
+	var verbose = flag.Bool("v", false, "Verbose mode, prints IDs of processes running in the given schroot session.")
+	flag.Usage = func() {
+		if !*quiet {
 			fmt.Fprintf(os.Stderr, "Usage: %s [OPTION]... SCHROOT-SESSION-NAME\n", os.Args[0])
 			fmt.Fprint(os.Stderr, "Options:\n")
 			flag.PrintDefaults()
@@ -24,6 +25,9 @@ func main() {
 	}
 	flag.Parse()
 	if *quiet {
+		if *verbose {
+			log.Fatalln("ERR: -q and -v are mutual exclusive.")
+		}
 		log.SetOutput(ioutil.Discard)
 	}
 	var sessionName = flag.Arg(0)
@@ -65,13 +69,21 @@ func main() {
 		log.Fatalln("ERR: You are not an allowed user for the parent schroot of the given session.")
 	}
 
-	result, err := getAllProcessDirectories("/var/lib/schroot/mount/" + sessionName)
+	result, err := getAllProcessIdsInSchrootSessionDir("/var/lib/schroot/mount/" + sessionName, !*verbose)
 	if err != nil {
 		log.Println(err)
 		log.Fatalln("ERR: Could not read all processes.")
 	}
 
-	if result {
+	if *verbose {
+		message := "INFO: The following process IDs are running in the given session:"
+		for _, id := range result {
+			message += " " + id
+		}
+		log.Println(message)
+	}
+
+	if len(result) > 0 {
 		log.Println("RESULT: There is at least one process active for the given session.")
 		os.Exit(-1)
 	} else {
@@ -80,29 +92,34 @@ func main() {
 	}
 }
 
-func getAllProcessDirectories(sessionMountDir string) (bool, error) {
+func getAllProcessIdsInSchrootSessionDir(sessionMountDir string, earlyReturn bool) ([]string, error) {
 	files, err := ioutil.ReadDir("/proc");
+	processIdsInSession := make([]string, 0)
 	if err != nil {
-		return false, err
+		return processIdsInSession, err
 	}
+
 	for _, f := range files {
 		if f.IsDir() {
 			isNumber, err := regexp.MatchString("[0-9]+", f.Name())
 			if err != nil {
-				return false, err
+				return processIdsInSession, err
 			}
 			if isNumber {
 				root, err := os.Readlink("/proc/" + f.Name() + "/root")
 				if err != nil {
-					return false, err
+					return processIdsInSession, err
 				}
 				if root == sessionMountDir {
-					return true, nil
+					processIdsInSession = append(processIdsInSession, f.Name())
+					if earlyReturn {
+						return processIdsInSession, nil
+					}
 				}
 			}
 		}
 	}
-	return false, nil
+	return processIdsInSession, nil
 }
 
 func getKeyFromIniFile(fileName string, sectionName string, keyName string) (string, error) {
