@@ -85,7 +85,7 @@ func main() {
 
 	if len(result) > 0 {
 		log.Println("RESULT: There is at least one process active for the given session.")
-		os.Exit(-1)
+		os.Exit(3)
 	} else {
 		log.Println("RESULT: There is no process active for the given session.")
 		os.Exit(0)
