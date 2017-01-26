@@ -22,9 +22,9 @@ Options:
   -v	Verbose mode, prints IDs of processes running in the given schroot session.
 ```
 
-Additionally, the result can be gathered from the tools returncode:
+Additionally, the result can be gathered from the tool's return code:
 
-| Active Processes Found | Returncode |
-| ---------------------- | ---------- |
-| no                     | 0          |
-| yes                    | 3          |
+| Active Processes Found | Return Code |
+| ---------------------- | ----------- |
+| no                     | 0           |
+| yes                    | 3           |
