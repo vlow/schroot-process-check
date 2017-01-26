@@ -6,7 +6,7 @@ Created to check if a schroot session can be safely ended.
 To use this as a normal user, setguid and setgid can be used.
 Assuming the binary's location is `/usr/bin/schroot-process-check`.
 
-```bash
+```
 # chown root:wheel /usr/bin/schroot-process-check
 # chmod 6711 /usr/bin/schroot-process-check
 ```
