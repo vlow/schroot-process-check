@@ -6,7 +6,7 @@ Created to check if a schroot session can be safely ended.
 To use this as a normal user, setguid and setgid can be used.
 Assuming the binary's location is `/usr/bin/schroot-process-check`.
 
-```bash
+```
 # chown root:wheel /usr/bin/schroot-process-check
 # chmod 6711 /usr/bin/schroot-process-check
 ```
@@ -22,9 +22,9 @@ Options:
   -v	Verbose mode, prints IDs of processes running in the given schroot session.
 ```
 
-Additionally, the result can be gathered from the tools returncode:
+Additionally, the result can be gathered from the tool's return code:
 
-| Active Processes Found | Returncode |
-| ---------------------- | ---------- |
-| no                     | 0          |
-| yes                    | 3          |
+| Active Processes Found | Return Code |
+| ---------------------- | ----------- |
+| no                     | 0           |
+| yes                    | 3           |

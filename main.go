@@ -36,7 +36,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	matches, err := regexp.MatchString(`[/\\:,;~&()'">< ]`, sessionName)
+	matches, err := regexp.MatchString(`[/\\:,;~&()'"><]`, sessionName)
 	if err != nil {
 		log.Println(err)
 		log.Fatalln("ERR: Could not validate session name.")
