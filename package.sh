@@ -17,8 +17,8 @@ cp -r $SOURCEDIR/main $BIN_DIR/schroot-process-check
 chmod 6711 $BIN_DIR/schroot-process-check
 
 # build packages
-fpm -s dir -t rpm -n schroot-process-check -C $TEMPDIR .
-fpm -s dir -t deb -n schroot-process-check -C $TEMPDIR .
+fpm -s dir -t rpm -n schroot-process-check --after-install set-permission.sh -C $TEMPDIR .
+fpm -s dir -t deb -n schroot-process-check --after-install set-permission.sh -C $TEMPDIR .
 
 rm -rf $TEMPDIR
 rm -rf $GOPATH
