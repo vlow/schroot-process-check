@@ -161,7 +161,7 @@ func getSessionMountPoint(sessionName string) (string, error) {
 	if err != nil {
 		return "", err;
 	}
-	return filepath.EvalSymlinks(mountPointFromFile), err
+	return filepath.EvalSymlinks(mountPointFromFile)
 }
 
 func getAllowedUsers(schrootName string) (string, error) {
