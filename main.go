@@ -15,7 +15,8 @@ import (
 func main() {
 	// Get the session name from the CLI
 	var quiet = flag.Bool("q", false, "Quiet mode, avoid all output.")
-	var verbose = flag.Bool("v", false, "Verbose mode, prints IDs of processes running in the given schroot session.")
+	var pidOutput = flag.Bool("p", false, "Prints the PIDs of all processes running in the given schroot.")
+
 	flag.Usage = func() {
 		if !*quiet {
 			fmt.Fprintf(os.Stderr, "Usage: %s [OPTION]... SCHROOT-SESSION-NAME\n", os.Args[0])
@@ -25,8 +26,8 @@ func main() {
 	}
 	flag.Parse()
 	if *quiet {
-		if *verbose {
-			log.Fatalln("ERR: -q and -v are mutual exclusive.")
+		if *pidOutput {
+			log.Fatalln("ERR: -q and -p are mutual exclusive.")
 		}
 		log.SetOutput(ioutil.Discard)
 	}
@@ -69,31 +70,35 @@ func main() {
 		log.Fatalln("ERR: You are not an allowed user for the parent schroot of the given session.")
 	}
 
-	schrootMountPoint, err:= getSessionMountPoint(sessionName)
+	schrootMountPoint, err := getSessionMountPoint(sessionName)
 	if err != nil {
 		log.Println(err)
 		log.Fatalln("ERR: Could not determine the mount point of the given session.")
 	}
 
-	result, err := getAllProcessIdsInSchrootSessionDir(schrootMountPoint, !*verbose)
+	result, err := getAllProcessIdsInSchrootSessionDir(schrootMountPoint, !*pidOutput)
 	if err != nil {
 		log.Println(err)
 		log.Fatalln("ERR: Could not read all processes.")
 	}
 
-	if *verbose {
-		message := "INFO: The following process IDs are running in the given session:"
+	message := ""
+	if !*pidOutput {
+		message = "RESULT: The following process IDs are running in the given session: "
+	}
+	if *pidOutput {
 		for _, id := range result {
-			message += " " + id
+			message += id + " "
 		}
-		log.Println(message)
 	}
 
 	if len(result) > 0 {
-		log.Println("RESULT: There is at least one process active for the given session.")
+		log.Println(message)
 		os.Exit(3)
 	} else {
-		log.Println("RESULT: There is no process active for the given session.")
+		if !*pidOutput {
+			log.Println("RESULT: There is no process active for the given session.")
+		}
 		os.Exit(0)
 	}
 }
