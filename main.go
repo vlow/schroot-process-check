@@ -10,6 +10,7 @@ import (
 	"os"
 	"log"
 	"fmt"
+	"path/filepath"
 )
 
 func main() {
@@ -156,7 +157,11 @@ func getSchrootName(sessionName string) (string, error) {
 
 func getSessionMountPoint(sessionName string) (string, error) {
 	filename := "/var/lib/schroot/session/" + sessionName
-	return getKeyFromIniFile(filename, sessionName, "mount-location")
+	mountPointFromFile, err := getKeyFromIniFile(filename, sessionName, "mount-location")
+	if err != nil {
+		return "", err;
+	}
+	return filepath.EvalSymlinks(mountPointFromFile), err
 }
 
 func getAllowedUsers(schrootName string) (string, error) {
