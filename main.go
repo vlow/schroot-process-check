@@ -69,7 +69,13 @@ func main() {
 		log.Fatalln("ERR: You are not an allowed user for the parent schroot of the given session.")
 	}
 
-	result, err := getAllProcessIdsInSchrootSessionDir("/var/lib/schroot/mount/" + sessionName, !*verbose)
+	schrootMountPoint, err:= getSessionMountPoint(sessionName)
+	if err != nil {
+		log.Println(err)
+		log.Fatalln("ERR: Could not determine the mount point of the given session.")
+	}
+
+	result, err := getAllProcessIdsInSchrootSessionDir(schrootMountPoint, !*verbose)
 	if err != nil {
 		log.Println(err)
 		log.Fatalln("ERR: Could not read all processes.")
@@ -141,6 +147,11 @@ func getKeyFromIniFile(fileName string, sectionName string, keyName string) (str
 func getSchrootName(sessionName string) (string, error) {
 	filename := "/var/lib/schroot/session/" + sessionName
 	return getKeyFromIniFile(filename, sessionName, "original-name")
+}
+
+func getSessionMountPoint(sessionName string) (string, error) {
+	filename := "/var/lib/schroot/session/" + sessionName
+	return getKeyFromIniFile(filename, sessionName, "mount-location")
 }
 
 func getAllowedUsers(schrootName string) (string, error) {
