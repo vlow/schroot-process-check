@@ -91,7 +91,7 @@ func main() {
 		}
 		log.Println(message + pids)
 		if *pidFormat {
-			fmt.Fprint(os.Stderr, pids + "\n")
+			fmt.Fprint(os.Stdout, pids + "\n")
 		}
 	}
 
