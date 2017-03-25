@@ -18,7 +18,7 @@ This is the output of the tool when called without any argument:
 ```
 Usage: ./main [OPTION]... SCHROOT-SESSION-NAME
 Options:
-  -p	PID format, outputs the PIDs only, n
+  -p	PID format, outputs the PIDs only.
   -q	Quiet mode, avoid all output.
   -v	Verbose mode, prints IDs of processes running in the given schroot session.
 ```
