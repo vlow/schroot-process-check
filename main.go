@@ -16,8 +16,8 @@ import (
 func main() {
 	// Get the session name from the CLI
 	var quiet = flag.Bool("q", false, "Quiet mode, avoid all output.")
-	var pidOutput = flag.Bool("p", false, "Prints the PIDs of all processes running in the given schroot.")
-
+	var verbose = flag.Bool("v", false, "Verbose mode, prints IDs of processes running in the given schroot session.")
+	var pidFormat = flag.Bool("p", false, "PID format, outputs the PIDs only, n")
 	flag.Usage = func() {
 		if !*quiet {
 			fmt.Fprintf(os.Stderr, "Usage: %s [OPTION]... SCHROOT-SESSION-NAME\n", os.Args[0])
@@ -26,10 +26,10 @@ func main() {
 		}
 	}
 	flag.Parse()
-	if *quiet {
-		if *pidOutput {
-			log.Fatalln("ERR: -q and -p are mutual exclusive.")
-		}
+	if (*quiet ^ *verbose ^ *pidFormat) && (*quiet && *verbose && *pidFormat) {
+		log.Fatalln("ERR: The parameters are mutual exclusive.")
+	}
+	if *quiet || *pidFormat {
 		log.SetOutput(ioutil.Discard)
 	}
 	var sessionName = flag.Arg(0)
@@ -77,29 +77,29 @@ func main() {
 		log.Fatalln("ERR: Could not determine the mount point of the given session.")
 	}
 
-	result, err := getAllProcessIdsInSchrootSessionDir(schrootMountPoint, !*pidOutput)
+	result, err := getAllProcessIdsInSchrootSessionDir(schrootMountPoint, !*verbose && !*pidFormat)
 	if err != nil {
 		log.Println(err)
 		log.Fatalln("ERR: Could not read all processes.")
 	}
 
-	message := ""
-	if !*pidOutput {
-		message = "RESULT: The following process IDs are running in the given session: "
-	}
-	if *pidOutput {
+	if *verbose || *pidFormat{
+		message := "INFO: The following process IDs are running in the given session: "
+		pids := ""
 		for _, id := range result {
-			message += id + " "
+			pids += id + " "
+		}
+		log.Println(message + pids)
+		if *pidFormat {
+			fmt.Fprint(os.Stderr, pids + "\n")
 		}
 	}
 
 	if len(result) > 0 {
-		log.Println(message)
+		log.Println("RESULT: There is at least one process active for the given session.")
 		os.Exit(3)
 	} else {
-		if !*pidOutput {
-			log.Println("RESULT: There is no process active for the given session.")
-		}
+		log.Println("RESULT: There is no process active for the given session.")
 		os.Exit(0)
 	}
 }
