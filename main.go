@@ -26,7 +26,7 @@ func main() {
 		}
 	}
 	flag.Parse()
-	if (*quiet ^ *verbose ^ *pidFormat) && (*quiet && *verbose && *pidFormat) {
+	if (*quiet != *verbose != *pidFormat) != (*quiet && *verbose && *pidFormat) {
 		log.Fatalln("ERR: The parameters are mutual exclusive.")
 	}
 	if *quiet || *pidFormat {
