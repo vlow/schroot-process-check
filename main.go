@@ -17,7 +17,7 @@ func main() {
 	// Get the session name from the CLI
 	var quiet = flag.Bool("q", false, "Quiet mode, avoid all output.")
 	var verbose = flag.Bool("v", false, "Verbose mode, prints IDs of processes running in the given schroot session.")
-	var pidFormat = flag.Bool("p", false, "PID format, outputs the PIDs only, n")
+	var pidFormat = flag.Bool("p", false, "PID format, outputs the PIDs only.")
 	flag.Usage = func() {
 		if !*quiet {
 			fmt.Fprintf(os.Stderr, "Usage: %s [OPTION]... SCHROOT-SESSION-NAME\n", os.Args[0])
