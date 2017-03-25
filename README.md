@@ -16,8 +16,9 @@ Assuming the binary's location is `/usr/bin/schroot-process-check`.
 This is the output of the tool when called without any argument:
 
 ```
-Usage: schroot-process-check [OPTION]... SCHROOT-SESSION-NAME
+Usage: ./main [OPTION]... SCHROOT-SESSION-NAME
 Options:
+  -p	PID format, outputs the PIDs only, n
   -q	Quiet mode, avoid all output.
   -v	Verbose mode, prints IDs of processes running in the given schroot session.
 ```
